@@ -6,7 +6,7 @@ import com.deniz.expense_ai_assistant.entity.Message;
 import com.deniz.expense_ai_assistant.util.MessageUtil;
 import lombok.experimental.UtilityClass;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @UtilityClass
@@ -33,7 +33,7 @@ public class DataAdapter {
         message.setTelegramUserId(messageDTO.getTelegramUserId());
         message.setChatId(messageDTO.getChatId());
         message.setMessageText(messageDTO.getMessageText());
-        message.setMessageReceivedTime(messageDTO.getExpenseDate() != null ? messageDTO.getExpenseDate().atStartOfDay() : LocalDateTime.now());
+        message.setMessageReceivedTime(messageDTO.getExpenseDate() != null ? messageDTO.getExpenseDate() : LocalDate.now());
         message.setAmount(messageDTO.getAmount());
         message.setMarketName(messageDTO.getMarketName());
         message.setProductName(messageDTO.getProductName());

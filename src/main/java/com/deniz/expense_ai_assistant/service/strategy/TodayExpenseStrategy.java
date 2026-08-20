@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
@@ -27,13 +26,12 @@ public class TodayExpenseStrategy implements ExpenseQueryStrategy {
 
     @Override
     public String buildResponse(Long chatId) {
-        LocalDateTime start = LocalDate.now().atStartOfDay();
-        LocalDateTime end = LocalDate.now().plusDays(1).atStartOfDay().minusNanos(1);
-        BigDecimal total = safeSum(chatId, start, end);
+        LocalDate today = LocalDate.now();
+        BigDecimal total = safeSum(chatId, today, today);
         return "Bugünün toplam harcaması: " + total + " TL";
     }
 
-    private BigDecimal safeSum(Long chatId, LocalDateTime start, LocalDateTime end) {
+    private BigDecimal safeSum(Long chatId, LocalDate start, LocalDate end) {
         try {
             BigDecimal result = messageRepository.sumAmountByChatIdAndIsExpenseTrueAndMessageReceivedTimeBetween(chatId, start, end);
             return result == null ? BigDecimal.ZERO : result;

@@ -7,8 +7,11 @@ import com.deniz.expense_ai_assistant.repository.MessageRepository;
 import com.deniz.expense_ai_assistant.service.MessageService;
 import com.deniz.expense_ai_assistant.service.TelegramSenderService;
 import com.deniz.expense_ai_assistant.service.strategy.ExpenseQueryStrategy;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -18,14 +21,16 @@ public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
     private final TelegramSenderService telegramSenderService;
-    private final ExpenseQueryStrategy expenseQueryStrategy;
+    private final List<ExpenseQueryStrategy> expenseQueryStrategies;
 
     @Override
     public void receiveMessage(TelegramUpdateDto updateDto) {
         try {
             String text = updateDto.getMessage().getText().trim();
             String normalized = text.toLowerCase(Locale.forLanguageTag("tr"));
-            Optional<ExpenseQueryStrategy> strategy = expenseQueryStrategy.matches(normalized) ? Optional.of(expenseQueryStrategy) : Optional.empty();
+            Optional<ExpenseQueryStrategy> strategy = expenseQueryStrategies.stream()
+                    .filter(s -> s.matches(normalized))
+                    .findFirst();
             if (strategy.isPresent()) {
                 String response = strategy.get().buildResponse(updateDto.getMessage().getChat().getId());
                 telegramSenderService.sendMessage(updateDto.getMessage().getChat().getId(), response);

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
@@ -54,14 +53,14 @@ public class SpecificDateExpenseStrategy implements ExpenseQueryStrategy {
             return "Tarih bulunamadı veya geçersiz.";
         }
 
-        LocalDateTime start = date.atStartOfDay();
-        LocalDateTime end = date.plusDays(1).atStartOfDay().minusNanos(1);
+        LocalDate start = date;
+        LocalDate end = date;
         BigDecimal total = safeSum(chatId, start, end);
 
         return date.format(OUTPUT_FMT) + " tarihinde toplam harcama: " + total + " TL";
     }
 
-    private BigDecimal safeSum(Long chatId, LocalDateTime start, LocalDateTime end) {
+    private BigDecimal safeSum(Long chatId, LocalDate start, LocalDate end) {
         try {
             BigDecimal result = messageRepository.sumAmountByChatIdAndIsExpenseTrueAndMessageReceivedTimeBetween(chatId, start, end);
             return result == null ? BigDecimal.ZERO : result;
