@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,8 +26,14 @@ public class Message {
     private Long chatId;
     @Column(name = "message_text", nullable = false)
     private String messageText;
-    @Column(name = "raw_update_json", nullable = false)
-    private String rawUpdateJson;
     @Column(name = "message_received_time", nullable = false)
     private LocalDateTime messageReceivedTime;
+    @Column(name = "amount", nullable = false)
+    private BigDecimal amount;
+    @Column(name = "market_name")
+    private String marketName;
+    @Column(name = "product_name")
+    private String productName;
+    @Column(name = "is_expense", nullable = false)
+    private boolean expense;
 }

@@ -7,13 +7,9 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class MessageDTO {
-    private Long telegramUserId;
-    private Long chatId;
-    private String messageText;
-    private BigDecimal amount;
-    private String messageReceivedTime;
+public class ParsedExpenseDTO {
     private String marketName;
     private String productName;
+    private BigDecimal amount;
     private boolean isExpense;
 }
