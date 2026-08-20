@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.deniz.expense_ai_assistant.constants.MessageConstants.EXPENSE;
+
 @Component
 @RequiredArgsConstructor
 public class SpecificDateExpenseStrategy implements ExpenseQueryStrategy {
@@ -26,6 +28,9 @@ public class SpecificDateExpenseStrategy implements ExpenseQueryStrategy {
     @Override
     public boolean matches(String normalizedText) {
         if (Optional.ofNullable(normalizedText).isEmpty()) {
+            return false;
+        }
+        if (normalizedText.contains(EXPENSE)) {
             return false;
         }
         Matcher m = DATE_PATTERN.matcher(normalizedText);
