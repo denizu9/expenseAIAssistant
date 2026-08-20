@@ -1,3 +1,22 @@
+server:
+  port:
+
 spring:
-  application:
-    name: expense-ai-assistant
+  datasource:
+    url:
+    username:
+    password:
+    driver-class-name:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+telegram:
+  bot:
+    token:
+    webhook-url:

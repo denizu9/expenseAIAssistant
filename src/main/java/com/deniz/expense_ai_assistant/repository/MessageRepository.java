@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
@@ -16,8 +16,8 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             Long chatId,
             String messageText,
             BigDecimal amount,
-            LocalDateTime start,
-            LocalDateTime end
+            LocalDate start,
+            LocalDate end
     );
 
     @Query("SELECT COALESCE(SUM(m.amount), 0) FROM Message m " +
@@ -25,7 +25,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             "AND m.messageReceivedTime BETWEEN :start AND :end")
     BigDecimal sumAmountByChatIdAndIsExpenseTrueAndMessageReceivedTimeBetween(
             @Param("chatId") Long chatId,
-            @Param("start") LocalDateTime start,
-            @Param("end") LocalDateTime end
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end
     );
 }

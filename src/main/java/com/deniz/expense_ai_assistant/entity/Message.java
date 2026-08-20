@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "message")
@@ -27,7 +27,7 @@ public class Message {
     @Column(name = "message_text", nullable = false)
     private String messageText;
     @Column(name = "message_received_time", nullable = false)
-    private LocalDateTime messageReceivedTime;
+    private LocalDate messageReceivedTime;
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
     @Column(name = "market_name")
