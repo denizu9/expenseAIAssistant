@@ -24,6 +24,7 @@ public class DataAdapter {
         dto.setMarketName(MessageUtil.parse(updateDto.getMessage().getText()).getMarketName());
         dto.setProductName(MessageUtil.parse(updateDto.getMessage().getText()).getProductName());
         dto.setExpense(MessageUtil.parse(updateDto.getMessage().getText()).isExpense());
+        dto.setExpenseDate(MessageUtil.parse(updateDto.getMessage().getText()).getExpenseDate());
         return dto;
     }
 
@@ -32,7 +33,7 @@ public class DataAdapter {
         message.setTelegramUserId(messageDTO.getTelegramUserId());
         message.setChatId(messageDTO.getChatId());
         message.setMessageText(messageDTO.getMessageText());
-        message.setMessageReceivedTime(LocalDateTime.now());
+        message.setMessageReceivedTime(messageDTO.getExpenseDate() != null ? messageDTO.getExpenseDate().atStartOfDay() : LocalDateTime.now());
         message.setAmount(messageDTO.getAmount());
         message.setMarketName(messageDTO.getMarketName());
         message.setProductName(messageDTO.getProductName());

@@ -36,4 +36,6 @@ public class Message {
     private String productName;
     @Column(name = "is_expense", nullable = false)
     private boolean expense;
+    @Column(name = "category")
+    private String category;
 }
