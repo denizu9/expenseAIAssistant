@@ -13,10 +13,10 @@ public class MessageController {
 
     private final MessageService messageService;
 
-    @PostMapping("/save")
+    @PostMapping("/receiveMessage")
     public ResponseEntity<?> receive(@RequestBody TelegramUpdateDto updateDTO) {
         if (updateDTO != null && updateDTO.getMessage() != null) {
-            messageService.saveMessage(updateDTO);
+            messageService.receiveMessage(updateDTO);
         }
         return ResponseEntity.ok().build();
     }

@@ -6,12 +6,9 @@ import com.deniz.expense_ai_assistant.dto.TelegramUpdateDto;
 import com.deniz.expense_ai_assistant.repository.MessageRepository;
 import com.deniz.expense_ai_assistant.service.MessageService;
 import com.deniz.expense_ai_assistant.service.TelegramSenderService;
+import com.deniz.expense_ai_assistant.service.strategy.ExpenseQueryStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -21,32 +18,17 @@ public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
     private final TelegramSenderService telegramSenderService;
+    private final ExpenseQueryStrategy expenseQueryStrategy;
 
     @Override
-    public void saveMessage(TelegramUpdateDto updateDto) {
+    public void receiveMessage(TelegramUpdateDto updateDto) {
         try {
             String text = updateDto.getMessage().getText().trim();
             String normalized = text.toLowerCase(Locale.forLanguageTag("tr"));
-            if (isTodayExpenseQuery(normalized)) {
-                LocalDateTime start = LocalDate.now().atStartOfDay();
-                LocalDateTime end = LocalDate.now().plusDays(1).atStartOfDay().minusNanos(1);
-                BigDecimal total = getTodayExpenses(updateDto.getMessage().getChat().getId(),start, end);
-                String reply = "Bugünün toplam harcaması: " + total + " TL";
-                telegramSenderService.sendMessage(updateDto.getMessage().getChat().getId(), reply);
-                return;
-            } else if (isMonthExpenseQuery(normalized)) {
-                LocalDateTime start = LocalDate.now().withDayOfMonth(1).atStartOfDay();
-                LocalDateTime end = LocalDate.now().plusMonths(1).withDayOfMonth(1).atStartOfDay().minusNanos(1);
-                BigDecimal total = getTodayExpenses(updateDto.getMessage().getChat().getId(),start, end);
-                String reply = "Bu ayın toplam harcaması: " + total + " TL";
-                telegramSenderService.sendMessage(updateDto.getMessage().getChat().getId(), reply);
-                return;
-            } else if (isYesterdayExpenseQuery(normalized)) {
-                LocalDateTime start = LocalDate.now().minusDays(1).atStartOfDay();
-                LocalDateTime end = LocalDate.now().atStartOfDay().minusNanos(1);
-                BigDecimal total = getTodayExpenses(updateDto.getMessage().getChat().getId(),start, end);
-                String reply = "Dünün toplam harcaması: " + total + " TL";
-                telegramSenderService.sendMessage(updateDto.getMessage().getChat().getId(), reply);
+            Optional<ExpenseQueryStrategy> strategy = expenseQueryStrategy.matches(normalized) ? Optional.of(expenseQueryStrategy) : Optional.empty();
+            if (strategy.isPresent()) {
+                String response = strategy.get().buildResponse(updateDto.getMessage().getChat().getId());
+                telegramSenderService.sendMessage(updateDto.getMessage().getChat().getId(), response);
                 return;
             }
             MessageDTO messageDTO = DataAdapter.prepareMessageDTO(updateDto);
@@ -60,34 +42,5 @@ public class MessageServiceImpl implements MessageService {
             } catch (Exception ignored) {
             }
         }
-    }
-
-    private BigDecimal getTodayExpenses(Long chatId, LocalDateTime startOfDay, LocalDateTime endOfDay) {
-        try {
-            return messageRepository.sumAmountByChatIdAndIsExpenseTrueAndMessageReceivedTimeBetween(chatId, startOfDay, endOfDay);
-        } catch (Exception e) {
-            return BigDecimal.ZERO;
-        }
-    }
-
-    private boolean isTodayExpenseQuery(String normalizedText) {
-        if (normalizedText == null || normalizedText.isBlank()) return false;
-        String canonical = "bugün toplam ne kadar harcadım";
-        String cleaned = normalizedText.trim().replaceAll("\\s+", " ");
-        return cleaned.equals(canonical);
-    }
-
-    private boolean isMonthExpenseQuery(String normalizedText) {
-        if (normalizedText == null || normalizedText.isBlank()) return false;
-        String canonical = "bu ay toplam ne kadar harcadım";
-        String cleaned = normalizedText.trim().replaceAll("\\s+", " ");
-        return cleaned.equals(canonical);
-    }
-
-    private boolean isYesterdayExpenseQuery(String normalizedText) {
-        if (normalizedText == null || normalizedText.isBlank()) return false;
-        String canonical = "dün toplam ne kadar harcadım";
-        String cleaned = normalizedText.trim().replaceAll("\\s+", " ");
-        return cleaned.equals(canonical);
     }
 }
