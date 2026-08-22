@@ -14,9 +14,10 @@ import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
-public class SpecificDateExpenseStrategy implements ExpenseQueryStrategy {
+public class SpecificDateExpenseStrategyCreditCard implements ExpenseQueryStrategy{
 
     private final MessageRepository messageRepository;
+
     private static final Pattern DATE_PATTERN = Pattern.compile("\\b(\\d{1,2}[\\.\\-/]\\d{1,2}[\\.\\-/]\\d{4})\\b");
     private static final ThreadLocal<LocalDate> MATCHED_DATE = new ThreadLocal<>();
     private static final DateTimeFormatter PARSER = DateTimeFormatter.ofPattern("d.M.uuuu");
@@ -30,7 +31,7 @@ public class SpecificDateExpenseStrategy implements ExpenseQueryStrategy {
         if (normalizedText.contains("harcama")) {
             return false;
         }
-        if (normalizedText.contains("kredi kartı")) {
+        if (!normalizedText.contains("kredi kartı")) {
             return false;
         }
         Matcher m = DATE_PATTERN.matcher(normalizedText);
@@ -63,12 +64,12 @@ public class SpecificDateExpenseStrategy implements ExpenseQueryStrategy {
         LocalDate end = date;
         BigDecimal total = safeSum(chatId, start, end);
 
-        return date.format(OUTPUT_FMT) + " tarihinde toplam harcama: " + total + " TL";
+        return date.format(OUTPUT_FMT) + " tarihinde toplam kredi kartı harcaması: " + total + " TL";
     }
 
     private BigDecimal safeSum(Long chatId, LocalDate start, LocalDate end) {
         try {
-            BigDecimal result = messageRepository.sumAmountByChatIdAndIsExpenseTrueAndMessageReceivedTimeBetween(chatId, start, end);
+            BigDecimal result = messageRepository.sumAmountByChatIdAndIsExpenseAndPaymentMethodTrueAndMessageReceivedTimeBetween(chatId, start, end);
             return result == null ? BigDecimal.ZERO : result;
         } catch (Exception e) {
             return BigDecimal.ZERO;

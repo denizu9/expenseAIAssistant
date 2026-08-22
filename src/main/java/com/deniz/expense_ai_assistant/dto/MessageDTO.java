@@ -14,8 +14,10 @@ public class MessageDTO {
     private String messageText;
     private BigDecimal amount;
     private String messageReceivedTime;
-    private String marketName;
+    private String paymentPoint;
     private String productName;
     private boolean isExpense;
     private LocalDate expenseDate;
+    private String paymentMethod;
+    private String category;
 }

@@ -28,4 +28,14 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             @Param("start") LocalDate start,
             @Param("end") LocalDate end
     );
+
+    @Query("SELECT COALESCE(SUM(m.amount), 0) FROM Message m " +
+            "WHERE (:chatId IS NULL OR m.chatId = :chatId) " +
+            "AND m.paymentMethod = 'Kredi_Kartı' " +
+            "AND m.messageReceivedTime BETWEEN :start AND :end")
+    BigDecimal sumAmountByChatIdAndIsExpenseAndPaymentMethodTrueAndMessageReceivedTimeBetween(
+            @Param("chatId") Long chatId,
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end
+    );
 }

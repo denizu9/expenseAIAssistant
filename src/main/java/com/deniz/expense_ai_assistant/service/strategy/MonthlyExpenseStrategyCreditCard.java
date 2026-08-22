@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class YesterdayExpenseStrategy implements ExpenseQueryStrategy {
+public class MonthlyExpenseStrategyCreditCard implements ExpenseQueryStrategy{
 
     private final MessageRepository messageRepository;
 
@@ -19,25 +19,25 @@ public class YesterdayExpenseStrategy implements ExpenseQueryStrategy {
         if (Optional.ofNullable(normalizedText).isEmpty()) {
             return false;
         }
-        String expectedInput = "dün toplam ne kadar harcadım";
+        String expectedInput = "kredi kartı bu ay toplam ne kadar harcadım";
         String input = normalizedText.trim().replaceAll("\\s+", " ");
-        return input.equals(expectedInput);
+        return input.equalsIgnoreCase(expectedInput);
     }
 
     @Override
     public String buildResponse(Long chatId) {
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-        BigDecimal total = safeSum(chatId, yesterday, yesterday);
-        return "Dünün toplam harcaması: " + total + " TL";
+        LocalDate start = LocalDate.now().withDayOfMonth(1);
+        LocalDate end = LocalDate.now().plusMonths(1).withDayOfMonth(1).minusDays(1);
+        BigDecimal total = safeSum(chatId, start, end);
+        return "Bu ayın toplam kredi kartı harcaması: " + total + " TL";
     }
 
     private BigDecimal safeSum(Long chatId, LocalDate start, LocalDate end) {
         try {
-            BigDecimal result = messageRepository.sumAmountByChatIdAndIsExpenseTrueAndMessageReceivedTimeBetween(chatId, start, end);
+            BigDecimal result = messageRepository.sumAmountByChatIdAndIsExpenseAndPaymentMethodTrueAndMessageReceivedTimeBetween(chatId, start, end);
             return result == null ? BigDecimal.ZERO : result;
         } catch (Exception e) {
             return BigDecimal.ZERO;
         }
     }
-
 }

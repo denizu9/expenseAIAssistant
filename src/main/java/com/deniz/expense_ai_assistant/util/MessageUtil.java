@@ -24,10 +24,12 @@ public class MessageUtil {
         }
 
         boolean isExpense = EXPENSE.equalsIgnoreCase(parts[0]);
-        String marketName = parts[1];
-        String productName = parts[2];
-        String priceText = parts[3].replace(",", ".");
-        String expenseDate = parts.length > 4 ? parts[4] : null;
+        String category = parts[1];
+        String paymentPoint = parts[2];
+        String productName = parts[3];
+        String priceText = parts[4].replace(",", ".");
+        String paymentMethod = parts.length > 5 ? parts[5] : null;
+        String expenseDate = parts.length > 6 ? parts[6] : null;
         BigDecimal amount;
         try {
             amount = new BigDecimal(priceText);
@@ -36,11 +38,13 @@ public class MessageUtil {
         }
 
         ParsedExpenseDTO dto = new ParsedExpenseDTO();
-        dto.setMarketName(marketName);
+        dto.setPaymentPoint(paymentPoint);
         dto.setProductName(productName);
         dto.setAmount(amount);
         dto.setExpense(isExpense);
         dto.setExpenseDate(expenseDate != null ? parseDate(expenseDate) : null);
+        dto.setPaymentMethod(paymentMethod);
+        dto.setCategory(category);
         return dto;
     }
 

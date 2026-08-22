@@ -21,10 +21,12 @@ public class DataAdapter {
         dto.setChatId(updateDto.getMessage().getChat() != null ? updateDto.getMessage().getChat().getId() : null);
         dto.setMessageText(updateDto.getMessage().getText());
         dto.setAmount(MessageUtil.parse(updateDto.getMessage().getText()).getAmount());
-        dto.setMarketName(MessageUtil.parse(updateDto.getMessage().getText()).getMarketName());
+        dto.setPaymentPoint(MessageUtil.parse(updateDto.getMessage().getText()).getPaymentPoint());
         dto.setProductName(MessageUtil.parse(updateDto.getMessage().getText()).getProductName());
         dto.setExpense(MessageUtil.parse(updateDto.getMessage().getText()).isExpense());
         dto.setExpenseDate(MessageUtil.parse(updateDto.getMessage().getText()).getExpenseDate());
+        dto.setPaymentMethod(MessageUtil.parse(updateDto.getMessage().getText()).getPaymentMethod());
+        dto.setCategory(MessageUtil.parse(updateDto.getMessage().getText()).getCategory());
         return dto;
     }
 
@@ -35,9 +37,11 @@ public class DataAdapter {
         message.setMessageText(messageDTO.getMessageText());
         message.setMessageReceivedTime(messageDTO.getExpenseDate() != null ? messageDTO.getExpenseDate() : LocalDate.now());
         message.setAmount(messageDTO.getAmount());
-        message.setMarketName(messageDTO.getMarketName());
+        message.setPaymentPoint(messageDTO.getPaymentPoint());
         message.setProductName(messageDTO.getProductName());
         message.setExpense(messageDTO.isExpense());
+        message.setPaymentMethod(messageDTO.getPaymentMethod());
+        message.setCategory(messageDTO.getCategory());
         return message;
     }
 }

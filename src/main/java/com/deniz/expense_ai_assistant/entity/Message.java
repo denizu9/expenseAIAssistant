@@ -30,12 +30,14 @@ public class Message {
     private LocalDate messageReceivedTime;
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
-    @Column(name = "market_name")
-    private String marketName;
     @Column(name = "product_name")
     private String productName;
     @Column(name = "is_expense", nullable = false)
     private boolean expense;
     @Column(name = "category")
     private String category;
+    @Column(name = "payment_method")
+    private String paymentMethod;
+    @Column(name = "payment_point")
+    private String paymentPoint;
 }

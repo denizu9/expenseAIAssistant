@@ -9,9 +9,11 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class ParsedExpenseDTO {
-    private String marketName;
+    private String paymentPoint;
     private String productName;
     private BigDecimal amount;
     private boolean isExpense;
     private LocalDate expenseDate;
+    private String paymentMethod;
+    private String category;
 }
